@@ -5,7 +5,8 @@
   "prompt": "D_standard_library.md",
   "servers": [
     "sak-rag",
-    "sak-crawler"
+    "sak-crawler",
+    "sak-shell"
   ],
   "handoff_to": []
 }

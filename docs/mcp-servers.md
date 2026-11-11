@@ -81,13 +81,41 @@ CLI 用户不需要这个服务，`sak handoff` 已内置同样能力。
 
 ---
 
-## sak-fs / sak-excel —— 第三方服务
+## sak-fs —— 知识库文件读写
 
-直接使用社区实现，不重复造：
+纯标准库实现，不需要 Node。所有路径限制在允许的根目录内，越界直接拒绝。
 
-```json
-"fs":    { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./kb"] },
-"excel": { "command": "npx", "args": ["-y", "@negokaz/excel-mcp-server"] }
-```
+| 工具 | 用途 |
+|:---|:---|
+| `read_file(path, offset, limit)` | 读文本，返回总行数与截断标记 |
+| `write_file(path, content)` | 覆盖写入，自动建父目录 |
+| `list_directory(path)` / `directory_tree(path, depth)` | 列目录 / 目录树 |
+| `search_files(pattern, path)` | 按文件名通配符递归查找 |
+| `move_file(source, target)` / `get_file_info(path)` | 移动重命名 / 元信息 |
 
-需要 Node.js 18+。若不想装 Node，可只用 `skills/excel-ledger-writer` 的脚本写台账。
+环境变量：`SAK_FS_ROOTS`（多个用 `os.pathsep` 分隔），默认取 `SAK_KB_ROOT`。
+
+---
+
+## sak-excel —— 台账读写
+
+| 工具 | 用途 |
+|:---|:---|
+| `describe_sheets(path)` | 列出 sheet、行列数、表头；写表前先看 |
+| `read_sheet(path, sheet, max_rows)` | 读二维数组，限制行数避免撑爆上下文 |
+| `write_sheet(path, rows, sheet, mode, start_row)` | `append` 追加 / `overwrite` 覆盖 |
+
+依赖 `openpyxl`。不做复杂公式与模板格式修改。
+
+---
+
+## sak-shell —— 受限脚本执行
+
+独立运行时没有宿主 IDE 的 Bash 工具，交付门禁 `gate.py`、台账脚本、docx 生成脚本都由它执行。
+
+| 工具 | 用途 |
+|:---|:---|
+| `run_python(script, args, cwd, timeout)` | 用当前解释器执行允许目录内的 `.py`，返回退出码与输出 |
+
+只接受 `.py` 脚本，不执行任意 shell 命令，有超时与输出截断。
+环境变量：`SAK_SHELL_ROOTS`（默认知识库根 + 仓库根）、`SAK_SHELL_TIMEOUT`（默认 300 秒）。

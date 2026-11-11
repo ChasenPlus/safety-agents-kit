@@ -6,7 +6,8 @@
   "servers": [
     "sak-fs",
     "sak-rag",
-    "sak-excel"
+    "sak-excel",
+    "sak-shell"
   ],
   "handoff_to": []
 }

@@ -7,7 +7,7 @@ name = "safety-agents-kit"
 version = "0.1.0"
 description = "用任意大模型驱动八分支安全合规智能体（提示词 + MCP 工具，不绑定任何 IDE）"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Safety Agents Kit contributors" }]
 keywords = ["safety", "compliance", "mcp", "llm", "agent", "power-industry"]

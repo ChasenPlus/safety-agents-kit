@@ -5,7 +5,8 @@
   "prompt": "G_documents.md",
   "servers": [
     "sak-fs",
-    "sak-report"
+    "sak-report",
+    "sak-shell"
   ],
   "handoff_to": [
     "B"

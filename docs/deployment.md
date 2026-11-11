@@ -26,7 +26,8 @@
   "kb_root": "./kb",
   "prompts_dir": "./prompts",
   "mcp_servers": {
-    "sak-fs": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./kb"] },
+    "sak-fs": { "command": "python", "args": ["server/fs/server.py"] },
+    "sak-shell": { "command": "python", "args": ["server/shell/server.py"] },
     "sak-rag": { "command": "python", "args": ["server/rag/server.py"] }
   }
 }
@@ -82,9 +83,9 @@ GEMINI_API_KEY=xxx
 
 | 服务 | 安装 |
 |:---|:---|
-| fs / excel | 需要 Node.js 18+，`npx` 会按需拉包 |
-| private / agent_switch | `pip install fastmcp`（1.x） |
-| report | `pip install mcp python-docx` |
+| fs / shell | 纯标准库，无需安装 |
+| excel | `pip install openpyxl` |
+| private / agent_switch / report | `pip install fastmcp`（report 另需 `python-docx`） |
 | rag | `pip install numpy onnxruntime tokenizers` + 向量模型 |
 | crawler | `pip install fastmcp scrapling pymupdf` |
 

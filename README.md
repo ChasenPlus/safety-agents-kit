@@ -69,10 +69,13 @@ SAK 把这四层拆开：**分支提示词是 Markdown 文件，工具是 MCP �
 
 ### 1. 安装
 
+需要 **Python 3.10+**，不需要 Node.js（文件、表格、脚本执行服务都是 Python 实现）。
+
 ```bash
 git clone https://github.com/your-org/safety-agents-kit.git
 cd safety-agents-kit
 pip install -e .
+pip install -e ".[servers]"    # MCP 服务依赖：fastmcp / openpyxl / python-docx
 ```
 
 只想要 CLI 而不装包，也可以直接 `python -m sak`。
@@ -149,9 +152,10 @@ sak branches           # 看全部分支
 | `sak-rag` | 本地语义检索（向量召回 + 可选精排，完全离线） | numpy / onnxruntime / tokenizers |
 | `sak-private` | R11 覆盖充分性核验、制度归属匹配 | fastmcp |
 | `sak-crawler` | 标准检索、下载、体检、转 Markdown | fastmcp / scrapling / pymupdf |
-| `sak-report` | 整改通知单等正式 docx 生成 | mcp / python-docx |
-| `sak-fs` | 本地文件读写 | `npx @modelcontextprotocol/server-filesystem` |
-| `sak-excel` | Excel 台账读写 | `npx @negokaz/excel-mcp-server` |
+| `sak-report` | 整改通知单等正式 docx 生成 | fastmcp / python-docx |
+| `sak-fs` | 知识库文件读写（限制在根目录内） | 纯标准库 |
+| `sak-excel` | xlsx 台账读写 | fastmcp / openpyxl |
+| `sak-shell` | 执行知识库内的 .py 脚本（门禁、台账、docx 生成） | 纯标准库 |
 | `sak-handoff` | 分支提示词分发（CLI 的 `sak handoff` 等价物） | fastmcp |
 
 各服务单独装依赖，互不影响：

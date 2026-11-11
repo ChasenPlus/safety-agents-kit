@@ -6,7 +6,8 @@
   "servers": [
     "sak-rag",
     "sak-private",
-    "sak-fs"
+    "sak-fs",
+    "sak-shell"
   ],
   "handoff_to": [
     "D"

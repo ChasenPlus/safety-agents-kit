@@ -7,7 +7,8 @@
     "sak-fs",
     "sak-rag",
     "sak-excel",
-    "sak-private"
+    "sak-private",
+    "sak-shell"
   ],
   "handoff_to": [
     "A"

@@ -10,18 +10,21 @@
   "prompts_dir": "./prompts",
   "mcp_servers": {
     "sak-fs": {
-      "command": "npx",
+      "command": "python",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "./kb"
+        "server/fs/server.py"
       ]
     },
     "sak-excel": {
-      "command": "npx",
+      "command": "python",
       "args": [
-        "-y",
-        "@negokaz/excel-mcp-server"
+        "server/excel/server.py"
+      ]
+    },
+    "sak-shell": {
+      "command": "python",
+      "args": [
+        "server/shell/server.py"
       ]
     },
     "sak-rag": {
