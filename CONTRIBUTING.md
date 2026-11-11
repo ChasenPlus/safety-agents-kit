@@ -10,12 +10,13 @@ cd safety-agents-kit
 pip install -e .
 python tests/test_smoke.py       # 应全绿，且不需要任何 API Key
 python tests/test_llm_wire.py    # 模型适配层报文格式
+python tests/test_coverage_cases.py  # 覆盖核验回归（改 coverage_core 必跑）
 ```
 
 ## 提交前自检
 
 1. `python -m compileall -q sak server scripts` 无报错
-2. `python tests/test_smoke.py` 与 `python tests/test_llm_wire.py` 全 PASS
+2. `python tests/test_smoke.py`、`python tests/test_llm_wire.py`、`python tests/test_coverage_cases.py` 全 PASS
 3. `python scripts/desensitize.py --scan-only` 残留为 0
 4. 没有提交 `.env`、`sak.json`、`kb/`、索引文件、任何标准原文 PDF
 
