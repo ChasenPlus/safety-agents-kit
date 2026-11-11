@@ -203,10 +203,11 @@ pip install -e ".[crawler]"     # 标准下载
 ```bash
 python tests/test_smoke.py            # 分支加载、配置解析、MCP 启动与调用、编排循环
 python tests/test_llm_wire.py         # 三家模型的请求/响应报文格式（本地假 HTTP 服务）
+python tests/test_servers.py          # 7 个 MCP 服务能否启动、工具是否齐全、读写与越界拦截
 python tests/test_coverage_cases.py   # R11 覆盖核验：20 条公开标准判例的回归锁定
 ```
 
-三个脚本都不需要任何 API Key，也不需要联网。
+四个脚本都不需要任何 API Key，也不需要联网。`test_servers.py` 需要先装服务依赖（`pip install -e ".[servers]"`）。
 
 ## 路线图
 
