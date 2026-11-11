@@ -108,12 +108,16 @@ class BranchAgent:
     # ---- 提示词 ----
     def system_prompt(self) -> str:
         prompt = self.branch.prompt(self.cfg.prompts_dir)
+        kb = str(self.cfg.kb_root).replace("\\", "/")
+        # 提示词里写的是 ${SAK_KB_ROOT} 占位符，注入真实路径模型才能直接用于工具参数
+        prompt = prompt.replace("${SAK_KB_ROOT}", kb)
         today = datetime.date.today().isoformat()
         runtime = (
             "\n\n---\n运行环境（由 Safety Agents Kit 注入，不属于分支规则）：\n"
-            f"- 知识库根目录：{self.cfg.kb_root}\n"
+            f"- 知识库根目录：{kb}\n"
             f"- 今天日期：{today}\n"
             "- 可用工具来自 MCP 服务，调用方式与提示词中描述一致；"
+            "执行 python 脚本一律用 run_python，没有 Bash 工具；"
             "若提示词要求读取某份 Wiki 笔记而工具无法访问，按提示词的降级规则处理并在结果里注明。\n"
         )
         return prompt + runtime

@@ -136,7 +136,8 @@ def cmd_handoff(args) -> int:
     """输出一份可直接粘给任意模型/子代理的交接包。"""
     cfg, branch = _prepare(args)
     task = _read_task(args)
-    prompt = branch.prompt(cfg.prompts_dir)
+    prompt = branch.prompt(cfg.prompts_dir).replace(
+        "${SAK_KB_ROOT}", str(cfg.kb_root).replace("\\", "/"))
     print(
         f"你是「{branch.name}」分支（{branch.id}）。严格按下面的分支提示词执行，"
         f"不得越权使用其他分支职责。\n"
