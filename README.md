@@ -172,6 +172,15 @@ pip install -e ".[crawler]"     # 标准下载
 
 详见 [docs/mcp-servers.md](docs/mcp-servers.md)。
 
+## 独立小工具
+
+[tools/ccspider](tools/ccspider/) 是一个**不依赖本项目**的标准文档小工具：批量下载行业标准并转 Markdown、把本地目录的 doc/pdf/xls 转 Markdown、比对两个文件是否一致。
+
+- `ccspider.exe`：Windows 单文件，双击就用，无需 Python；
+- `ccspider.py`：源码，约 550 行，可自行改接口或加行业。
+
+适合把下载件交给不写代码的同事，或临时换台机器救急。详见 [tools/ccspider/README.md](tools/ccspider/README.md)。
+
 ## 知识库
 
 `kb_template/` 是一套可直接用的知识库骨架：

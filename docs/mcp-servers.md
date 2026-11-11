@@ -57,6 +57,9 @@ python server/<服务名>/server.py
 抓取遵循「官方 / 协会 / 政府公开页优先」，付费墙与盗版站不抓，不做验证码绕过。
 浏览器依赖缺失时自动降级为 HTTP 抓取，不报错。
 
+同目录的 `download_std.py` 是这套下载/转换逻辑的命令行版（与 `tools/ccspider` 同源）；
+要在浏览器里手动用，直接拿 [tools/ccspider](../tools/ccspider/) 的 exe，不必自己包服务。
+
 ---
 
 ## sak-report —— 正式文档生成

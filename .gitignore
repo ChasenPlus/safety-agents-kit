@@ -32,3 +32,8 @@ node_modules/
 ~$*.xlsx
 .DS_Store
 Thumbs.db
+
+# ccspider 运行输出与打包中间文件
+tools/ccspider/DownloadMD/
+tools/ccspider/TOMD/
+*.spec
