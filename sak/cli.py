@@ -155,7 +155,7 @@ def cmd_doctor(args) -> int:
     print(f"模型            : {cfg.provider} / {cfg.model}")
     print(f"接口地址        : {cfg.base_url}")
     keyless = cfg.provider.lower() in {"mock", "ollama", "vllm"}
-    key_state = "本地服务，无需密钥" if keyless else ("已配置" if cfg.api_key else "未配置（调用会失败）")
+    key_state = "本地服务，无需密钥" if keyless else ("已配置" if cfg.api_key else "✗ 未配置（真实调用会失败，可先用 --mock 验证流程）")
     print(f"API Key         : {key_state}")
     print(f"知识库目录      : {cfg.kb_root} {'✓' if cfg.kb_root.is_dir() else '✗ 不存在'}")
     print(f"提示词目录      : {cfg.prompts_dir} {'✓' if cfg.prompts_dir.is_dir() else '✗ 不存在'}")
@@ -171,7 +171,7 @@ def cmd_doctor(args) -> int:
 
     directory_xlsx = cfg.kb_root / "企业标准体系目录.xlsx"
     print(f"制度目录        : {directory_xlsx} "
-          f"{'✓' if directory_xlsx.is_file() else '✗ 不存在（match_regulation 将不可用）'}")
+          f"{'✓' if directory_xlsx.is_file() else '! 不存在（match_regulation 将不可用）'}")
 
     if not keyless and not cfg.api_key:
         ok = False
@@ -203,7 +203,7 @@ def cmd_doctor(args) -> int:
     finally:
         manager.close()
 
-    print("\n结论：" + ("全部通过" if ok else "存在问题，见上面 ✗ 项"))
+    print("\n结论：" + ("全部通过" if ok else "存在问题，见上面 ✗ 项（! 为可降级项）"))
     return 0 if ok else 1
 
 

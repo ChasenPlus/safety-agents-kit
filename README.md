@@ -166,6 +166,10 @@ pip install -e ".[rag]"         # 本地检索
 pip install -e ".[crawler]"     # 标准下载
 ```
 
+> `sak-rag` 还需要**向量模型文件**（`bge-small-zh` 的 `tokenizer.json` + onnx 权重）才能检索，
+> 模型是二进制、不随仓库分发。没放模型时其余服务照常工作，只是 `rag_search` 不可用。
+> 放置位置与重建索引见 [docs/deployment.md](docs/deployment.md)。
+
 详见 [docs/mcp-servers.md](docs/mcp-servers.md)。
 
 ## 知识库

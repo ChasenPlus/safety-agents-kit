@@ -47,6 +47,7 @@ class StdioMCPClient:
         # FastMCP 的启动横幅和升级提示都写 stderr，会混进进度输出
         env.setdefault("FASTMCP_SHOW_SERVER_BANNER", "false")
         env.setdefault("FASTMCP_CHECK_FOR_UPDATES", "off")
+        env.setdefault("FASTMCP_LOG_LEVEL", "WARNING")
         cmd = [self.command] + self.args
         creationflags = 0
         if os.name == "nt":
@@ -100,8 +101,10 @@ class StdioMCPClient:
 
     def _pump_stderr(self) -> None:
         assert self._proc and self._proc.stderr
+        prefix = f"[{self.name}] "
         for line in self._proc.stderr:
-            sys.stderr.write(f"[{self.name}] {line}")
+            # 服务自己已经带了同名前缀就不再重复加
+            sys.stderr.write(line if line.startswith(prefix) else prefix + line)
 
     def _send(self, payload: dict) -> None:
         if not self._proc or not self._proc.stdin:

@@ -98,9 +98,15 @@ def _startup_warmup():
     加载 embedding/reranker 并跑 dummy 推理，消除首个检索请求的冷启动尖峰。
     预热失败不阻断启动，首个请求退回惰性加载。"""
     try:
+        if not (Path(rag_core.MODEL_DIR) / "tokenizer.json").is_file():
+            print(f"[sak-rag] 未找到向量模型：{rag_core.MODEL_DIR}", file=sys.stderr)
+            print("[sak-rag] 请放入 bge-small-zh 模型目录（含 tokenizer.json 与 onnx 权重），"
+                  "然后运行 python server/rag/rag_core.py reindex；未放模型时检索不可用。",
+                  file=sys.stderr)
+            return
         get_index().warmup()
     except Exception as exc:  # noqa: BLE001
-        print(f"[sak-rag] 启动预热跳过: {exc}", file=sys.stderr)
+        print(f"[sak-rag] 启动预热跳过（首个请求会惰性加载）: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":
