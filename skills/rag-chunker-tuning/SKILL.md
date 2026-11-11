@@ -5,8 +5,8 @@ description: sak-rag 切块器（rag_core.py parse_and_chunk）迭代调优的�
 
 # RAG 切块器迭代调优流程
 
-主文件：`.trae/mcp-servers/sak-rag-mcp/rag_core.py`（`parse_and_chunk` 及表格 helper）。
-venv：`.trae/python-venv/Scripts/python.exe`，一律加 `-X utf8`；PowerShell 用 `;` 不用 `&&`，stderr 红字属正常。
+主文件：`server/rag/rag_core.py`（`parse_and_chunk` 及表格 helper）。
+venv：`python`，一律加 `-X utf8`；PowerShell 用 `;` 不用 `&&`，stderr 红字属正常。
 生产库 30+ 万 chunk，**任何切块改动都必须走完下面六步才能动生产索引**。
 
 ## 1. 语料调查（先量化，别只看一个样本）
@@ -47,7 +47,7 @@ import 前设环境变量指 tempfile：`SAK_KB_ROOT` / `SAK_RAG_INDEX_DIR` / `S
 
 - 独立进程跑 2-3 个真实查询（目标用例 + 相邻业务用例），确认 top 命中且分数合理。
 - `py_compile` 终检、GetDiagnostics 无诊断、删除全部 `_tmp*.py`。
-- MCP 不热加载：完成后**提示用户重启 宿主平台**。
+- MCP 不热加载：完成后**提示用户重启宿主客户端**。
 
 ## 关键教训（都实际发生过）
 

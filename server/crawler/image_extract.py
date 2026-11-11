@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """文档图片抽取与资产落盘的原子能力（映射表驱动，禁止正则猜文件名）。
 
-上层约定（见 .trae/documents/图片保真管线_plan.md）：
+上层约定（见 docs/architecture.md）：
 - 图片目录：与 md 同目录的 ``{stem}_images/``
 - 命名：docx 图 d01.png；pdf 图 p001_01.png
 - md 引用一律正斜杠相对路径：``![图注](./{stem}_images/d01.png)``

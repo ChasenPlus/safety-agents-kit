@@ -501,7 +501,7 @@ def menu_download(program_root):
 
 def menu_local_dir(program_root):
     """菜单项 2：本地目录文件转 md。"""
-    src = input("请输入目录路径（例如 D:\\docs）：\n").strip()
+    src = input("请输入目录路径（例如 docs）：\n").strip()
     if not src:
         print("未输入目录，返回菜单。")
         return

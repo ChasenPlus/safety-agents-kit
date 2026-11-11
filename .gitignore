@@ -21,6 +21,9 @@ sak.json
 .env
 .env.local
 
+# 本地脱敏词表（含真实单位名，禁止提交）
+scripts/sensitive_words.txt
+
 # MCP 依赖
 node_modules/
 

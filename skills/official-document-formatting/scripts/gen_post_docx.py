@@ -3,10 +3,10 @@ import os
 """批量生成11岗×5份=55份docx（A组+B组）"""
 import json, os, sys, importlib.util
 
-BASE = os.path.expandvars(r'$SAK_KB_ROOT\03-输出层\工作包\金隅兴发科技园三期分布式光伏')
+BASE = os.path.expandvars(r'$SAK_KB_ROOT\03-输出层\工作包\示例光伏项目')
 OUT = os.path.join(BASE, 'docx')
 BUILD = os.path.join(BASE, '_build')
-SCRIPT = r'd:\工作\AI中心\宿主平台用简化版\.trae\skills\official-document-formatting\scripts\generate_work_package_docs.py'
+SCRIPT = r'skills\official-document-formatting\scripts\generate_work_package_docs.py'
 
 # 加载脚本模块（需先注入脚本目录到sys.path）
 SCRIPT_DIR = os.path.dirname(SCRIPT)
@@ -31,7 +31,7 @@ POSTS = [
     {"fn": "汽车吊司机", "risk": "起重伤害/触电/机械伤害/高处坠落/倾覆", "measure": "持证上岗/作业前检查/支腿全伸/服从指挥/十不吊/试吊/风停工", "proc": "作业前检查→支腿→试吊→正式吊装→就位→收车→记录", "quality": "年检通过率100%/安全装置完好率100%", "key_cp": "年检有效/支腿承载/试吊执行/风停工/信号协调", "emerg": "停止动作/缓慢放置/切断动力/下车撤离/上报"},
     {"fn": "起重司索信号工", "risk": "起重伤害/物体打击/指挥失误/高处坠落/触电", "measure": "持证上岗/索具检查/夹角≥45°/试吊/统一信号/警戒疏散/风停工", "proc": "核查吊物→绑扎→试吊→指挥→就位→收尾", "quality": "索具合格率100%/绑扎零滑脱/信号零失误", "key_cp": "索具夹角/试吊/警戒疏散/风停工/信号协调", "emerg": "停止信号/引导放置/警戒疏散/上报"},
     {"fn": "电工", "risk": "触电/电气火灾/电弧灼伤/高处坠落/机械伤害", "measure": "持证上岗/停电四步骤/禁止带电插拔/漏保30mA/0.1s/接地<4Ω/每日试跳", "proc": "临电架设→每日巡查→电缆敷设→汇流箱接线→逆变器接线→调试配合→竣工拆除", "quality": "接地电阻<4Ω/漏保100%合格/电缆标识清晰/绝缘电阻合格", "key_cp": "停电四步骤/漏保试跳/直流侧防反接/汇流箱断开点/接地测试", "emerg": "断电施救/心肺复苏/干粉灭火/组件着火断汇流箱/逆变器着火断开关/上报"},
-    {"fn": "焊工", "risk": "火灾爆炸/灼烫/触电/职业病/高处坠落", "measure": "持证上岗/动火票/10m清易燃/空载降压保护/气瓶距离/高处防溅/5级风停/企安安报备", "proc": "动火前准备→设备检查→焊接作业→过程监控→结束清场", "quality": "焊缝成型均匀/无咬边气孔夹渣裂纹/焊后防腐补漆", "key_cp": "动火票/监护/5级风/气瓶距离/防火毯/防腐处理", "emerg": "停止作业/灭火器灭火/断电施救/冷水冲洗/气瓶关闭/撤离"},
+    {"fn": "焊工", "risk": "火灾爆炸/灼烫/触电/职业病/高处坠落", "measure": "持证上岗/动火票/10m清易燃/空载降压保护/气瓶距离/高处防溅/5级风停/属地安全报备系统报备", "proc": "动火前准备→设备检查→焊接作业→过程监控→结束清场", "quality": "焊缝成型均匀/无咬边气孔夹渣裂纹/焊后防腐补漆", "key_cp": "动火票/监护/5级风/气瓶距离/防火毯/防腐处理", "emerg": "停止作业/灭火器灭火/断电施救/冷水冲洗/气瓶关闭/撤离"},
     {"fn": "屋面安装班组长", "risk": "班组管理失职/高处坠落/物体打击/违章指挥/质量不合格", "measure": "班前会交底/人员检查/监督高处作业/风停工/质量把关/师傅带徒弟", "proc": "班前会→人员检查→工具检查→过程监督→班后会→隐患排查", "quality": "支架±1°/组件高差≤2mm/力矩按产品/一次验收合格率≥95%", "key_cp": "危险点告知签字/安全带100%/风停工/组件轻拿轻放/工序不转序", "emerg": "组织撤离/清点人数/上报/配合处置/保护现场"},
     {"fn": "屋面安装工", "risk": "高处坠落/物体打击/触电/中暑冻伤/机械伤害", "measure": "三级教育合格/全程佩戴防护用品/安全带高挂低用/不跨越围栏/工具装袋/风停工/不触摸带电部位/三违", "proc": "班前会→上屋面→支架安装→组件安装→电缆串接→班后清理", "quality": "组件无隐裂划伤/力矩按产品/接插件牢固/防水无破损", "key_cp": "安全带全程/组件轻拿轻放/雨中不连线/风主动停工/不触摸带电", "emerg": "呼救/不盲目施救/断电救人/撤离/保持镇静等待救援"},
 ]
@@ -39,7 +39,7 @@ POSTS = [
 # 生成每岗JSON并调用脚本
 results = {}
 for p in POSTS:
-    work_name = f"金隅兴发屋顶光伏板_{p['fn']}"
+    work_name = f"示例光伏项目屋顶光伏板_{p['fn']}"
     data = {
         "output_dir": OUT,
         "work_name": work_name,
@@ -50,7 +50,7 @@ for p in POSTS:
         "procedure_steps": [{"text": t, "image": "", "image_caption": ""} for t in p["proc"].split("→")],
         "quality_requirements": [{"text": t, "image": "", "image_caption": ""} for t in p["quality"].split("/")],
         "key_control_points": [{"text": t, "image": "", "image_caption": ""} for t in p["key_cp"].split("/")],
-        "scenario": f"金隅兴发科技园三期分布式光伏项目屋顶光伏板安装现场（{p['fn']}岗位）",
+        "scenario": f"示例光伏项目项目屋顶光伏板安装现场（{p['fn']}岗位）",
         "risks": [{"text": t, "image": "", "image_caption": ""} for t in p["risk"].split("/")[:5]],
         "emergency_steps": [{"text": t, "image": "", "image_caption": ""} for t in p["emerg"].split("/")],
         "site_contact": "现场负责人：______",

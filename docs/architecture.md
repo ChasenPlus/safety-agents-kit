@@ -53,7 +53,7 @@
 | 想做的事 | 改哪里 |
 |:---|:---|
 | 加一个分支 | 新增 `branches/X.json` + `prompts/X_*.md` |
-| 加一个模型供应商 | 新增 `sak/llm/xxx.py` 实现 `chat()`，在 `llm/__init__.py` 注册 |
+| 加一个模型供应商 | 新增 `sak/llm/xxx.py` 实现 `chat()`，在 `llm/__init__.py` 注册协议；想用短名接入则在 `sak/presets.py` 补一行预设 |
 | 加一个工具服务 | 新增 `server/xxx/`，在 `sak.json` 的 `mcp_servers` 注册，在分支 JSON 的 `servers` 里引用 |
 | 换检索实现 | 只改 `server/rag/`，提示词与编排层不动 |
 | 改输出格式 | 只改 `prompts/`，不动代码 |

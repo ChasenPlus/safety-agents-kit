@@ -30,9 +30,9 @@ scrapling install
 python sak_crawler_mcp.py
 ```
 
-**证书注意**：部署路径含中文时，curl_cffi 加载 certifi 内置 CA 会报 `CURLE_SSL_CACERT(77)`，须通过环境变量 `CURL_CA_BUNDLE` 指向 ASCII 路径的 `cacert.pem`（`.trae/mcp.json` 里已配置）。
+**证书注意**：部署路径含中文时，curl_cffi 加载 certifi 内置 CA 会报 `CURLE_SSL_CACERT(77)`，须通过环境变量 `CURL_CA_BUNDLE` 指向 ASCII 路径的 `cacert.pem`（`sak.json` 里已配置）。
 
-## 独立测试（不经过TRAE，直接验证核心逻辑）
+## 独立测试（不经过宿主 IDE，直接验证核心逻辑）
 
 ```python
 import crawler_core as cc

@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .presets import PRESETS
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULTS: dict[str, Any] = {
@@ -95,6 +97,10 @@ def _candidate_paths(explicit: str | None) -> list[Path]:
 def load_config(explicit: str | None = None) -> Config:
     data: dict[str, Any] = dict(DEFAULTS)
     source: Path | None = None
+    explicit_keys: set[str] = set()
+
+    if explicit and not Path(explicit).is_file():
+        raise SystemExit(f"配置文件不存在：{explicit}")
 
     for path in _candidate_paths(explicit):
         if not path.is_file():
@@ -109,11 +115,24 @@ def load_config(explicit: str | None = None) -> Config:
                 data["mcp_servers"] = {**data["mcp_servers"], **v}
             else:
                 data[k] = v
+                explicit_keys.add(k)
         break
 
     for env_key, cfg_key in ENV_OVERRIDES.items():
         if os.environ.get(env_key):
             data[cfg_key] = os.environ[env_key]
+            explicit_keys.add(cfg_key)
+
+    # provider 写成预设名（deepseek / ollama / qwen …）时，补齐未显式指定的接入点
+    preset = PRESETS.get(str(data["provider"]).lower())
+    if preset:
+        _, preset_base, preset_model, preset_key_env = preset
+        if "base_url" not in explicit_keys:
+            data["base_url"] = preset_base
+        if "model" not in explicit_keys:
+            data["model"] = preset_model
+        if "api_key_env" not in explicit_keys:
+            data["api_key_env"] = preset_key_env
 
     api_key = str(data.get("api_key") or os.environ.get(str(data["api_key_env"]), ""))
 

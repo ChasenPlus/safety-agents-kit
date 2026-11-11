@@ -44,6 +44,9 @@ class StdioMCPClient:
         env.update(self.extra_env)
         env.setdefault("PYTHONIOENCODING", "utf-8")
         env.setdefault("PYTHONUTF8", "1")
+        # FastMCP 的启动横幅和升级提示都写 stderr，会混进进度输出
+        env.setdefault("FASTMCP_SHOW_SERVER_BANNER", "false")
+        env.setdefault("FASTMCP_CHECK_FOR_UPDATES", "off")
         cmd = [self.command] + self.args
         creationflags = 0
         if os.name == "nt":

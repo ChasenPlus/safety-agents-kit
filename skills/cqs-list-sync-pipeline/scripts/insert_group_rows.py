@@ -19,7 +19,7 @@ insert_group_rows.py — cqs基建清单主表"分组依据行"结构化写入
   python insert_group_rows.py --print-sample-config
   python insert_group_rows.py --selftest      # 内存自检，不写盘
 
-解释器：.trae/python-venv/Scripts/python.exe（已装 openpyxl）
+解释器：python（已装 openpyxl）
 """
 import argparse
 import json
@@ -30,7 +30,7 @@ try:
     from openpyxl import load_workbook, Workbook
     from openpyxl.styles import PatternFill
 except ImportError:
-    sys.exit("缺少 openpyxl，请用 .trae/python-venv/Scripts/python.exe 运行")
+    sys.exit("缺少 openpyxl，请用 python 运行")
 
 # 依据来源分类 → D列底色（2026-10-03 全表统一映射，勿改）
 FILL_BY_KIND = {

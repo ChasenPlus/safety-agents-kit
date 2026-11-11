@@ -3,7 +3,7 @@
 md_to_docx.py — 通用Markdown转Word转换器（示例电力工作包/方案专用）
 
 用途：将施工组织方案、专项施工方案等Markdown文档转换为带真实表格的正式Word文档。
-背景：2026-10-06金隅兴发项目初版转换把md表格降级为文本行，不符合正式文档要求，故重写。
+背景：2026-10-06示例光伏项目项目初版转换把md表格降级为文本行，不符合正式文档要求，故重写。
 
 支持语法：
   # / ## / ### / #### 标题（黑体，居中仅一级标题）
@@ -17,7 +17,7 @@ md_to_docx.py — 通用Markdown转Word转换器（示例电力工作包/方案�
   python md_to_docx.py <input.md> [output.docx] [--title "文档标题"]
   省略output时默认同名.docx；--title省略时取md首个# 标题。
 
-依赖：python-docx（.trae/python-venv已装）
+依赖：python-docx（.venv已装）
 """
 import os
 import re

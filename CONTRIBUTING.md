@@ -9,12 +9,13 @@ git clone <repo>
 cd safety-agents-kit
 pip install -e .
 python tests/test_smoke.py       # 应全绿，且不需要任何 API Key
+python tests/test_llm_wire.py    # 模型适配层报文格式
 ```
 
 ## 提交前自检
 
 1. `python -m compileall -q sak server scripts` 无报错
-2. `python tests/test_smoke.py` 全 PASS
+2. `python tests/test_smoke.py` 与 `python tests/test_llm_wire.py` 全 PASS
 3. `python scripts/desensitize.py --scan-only` 残留为 0
 4. 没有提交 `.env`、`sak.json`、`kb/`、索引文件、任何标准原文 PDF
 
@@ -66,7 +67,8 @@ python tests/test_smoke.py       # 应全绿，且不需要任何 API Key
 ## 脱敏
 
 仓库里不得出现真实企业名、项目名、人名、手机号、内部文件路径。
-`scripts/desensitize.py` 负责批量替换与扫描，新增敏感词时往它的替换表里加一行。
+`scripts/desensitize.py` 负责扫描（绝对路径、手机号、身份证号）并按词表替换：
+把需要替换的词写进 `scripts/sensitive_words.txt`（一行 `原词=替换词`，该文件已 gitignore，不会提交）。
 
 ## 代码风格
 

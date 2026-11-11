@@ -6,7 +6,7 @@ description: 标准文件从获取到入库的全链路处置 SOP——官方/�
 # 标准下载入库流水线（获取→校验→OCR→归位→入库→登记）
 
 本技能是 2026-10-03/04 两批真实补缺（32 项正规位 + JGJ59 错配件事件）跑通后固化的 SOP。
-执行爬虫相关动作时，同时受《其他杂项/宿主平台智能体提示词/分支D_标准库管理智能体.md》约束
+执行爬虫相关动作时，同时受《prompts/D_standard_library.md》约束
 （本系统唯一触发爬虫的入口；删除文件逐项确认；不越权做条款检索/巡查/写材料）。
 
 ## 触发与边界
@@ -33,7 +33,7 @@ description: 标准文件从获取到入库的全链路处置 SOP——官方/�
    - 封面标准号身份校验（文字层/扫描件自动 OCR 前 3 页，容错 OCR 变体），
      错配件自动删件换下一候选源（JGJ59 被 8 个 JGJ 查询误配的教训）；
    - MD5 去重；官方/协会域名 tier0 优先于开源存档与普通站。
-3. 行为变更后必须重启 宿主平台 才加载新代码；发现返回字段缺 identity_check/health_check
+3. 行为变更后必须重启宿主客户端 才加载新代码；发现返回字段缺 identity_check/health_check
    即说明常驻 MCP 是旧版，停止并提示重启。
 
 ## 第 2 步 下载件体检（入库前必做）
@@ -114,7 +114,7 @@ python "${SAK_KB_ROOT}\04-脚本代码\link_checklist_standards.py"
 
 ## 本工作区环境坑
 
-- venv 固定 `d:\工作\AI中心\宿主平台用简化版\.trae\python-venv\Scripts\python.exe`，
+- venv 固定 `python`，
   一律 `-X utf8`；中文长 JSON/代码先 Write 成临时 .py 再执行，用完即删。
 - 大文件/大目录 LS、Read、DeleteFile、run_mcp 易 IDE 超时；改用 Shell +
   PowerShell（`Get-ChildItem -Recurse`、`Remove-Item -LiteralPath`、

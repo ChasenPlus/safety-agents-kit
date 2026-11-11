@@ -30,6 +30,11 @@ class Branch:
 
 def load_branches(branches_dir: Path | None = None) -> dict[str, Branch]:
     directory = branches_dir or BRANCHES_DIR
+    if not directory.is_dir():
+        raise SystemExit(
+            f"找不到分支目录：{directory}\n"
+            "分支清单与提示词随源码分发，请用 `pip install -e .` 或 `python -m sak` 在仓库目录内运行。"
+        )
     out: dict[str, Branch] = {}
     for path in sorted(directory.glob("*.json")):
         raw = json.loads(path.read_text(encoding="utf-8"))

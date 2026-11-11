@@ -28,7 +28,7 @@ import zipfile
 try:
     from openpyxl import load_workbook, Workbook
 except ImportError:
-    sys.exit("缺少 openpyxl，请用 .trae/python-venv/Scripts/python.exe 运行")
+    sys.exit("缺少 openpyxl，请用 python 运行")
 
 COLS = 8
 # 本簿实际布局（2026-10-09 复核）：8列主表/打印表 r1大标题(A1:H1合并)、r2表头，数据自 r3 起；

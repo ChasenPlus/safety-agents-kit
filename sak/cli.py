@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from .agent import BranchAgent, MCPManager
-from .branches import REPO_ROOT, load_branches, resolve_branch
+from .branches import REPO_ROOT, Branch, load_branches, resolve_branch
 from .config import Config, load_config
 from .llm import build_client
 
@@ -32,7 +32,7 @@ def _read_task(args) -> str:
     raise SystemExit("缺少任务内容：直接写在命令后面，或用 -f 指定文件，或通过管道传入")
 
 
-def _prepare(args) -> tuple[Config, object]:
+def _prepare(args) -> tuple[Config, Branch]:
     cfg = load_config(args.config)
     branches = load_branches()
     branch = resolve_branch(branches, args.branch)
@@ -59,6 +59,12 @@ def cmd_run(args) -> int:
         manager.start(branch.servers)
         agent = BranchAgent(cfg, branch, build_client(cfg), _progress)
         answer = agent.run(task, manager)
+    except RuntimeError as exc:
+        _progress(f"✗ {exc}")
+        return 1
+    except KeyboardInterrupt:
+        _progress("✗ 已中断")
+        return 130
     finally:
         manager.close()
 
@@ -90,7 +96,16 @@ def cmd_chat(args) -> int:
                 continue
             history.append({"role": "user", "content": line})
             system = agent.system_prompt()
-            turn_answer = _run_turn(agent, manager, system, history)
+            try:
+                turn_answer = _run_turn(agent, manager, system, history)
+            except KeyboardInterrupt:
+                _progress("· 已中断本轮")
+                history.pop()
+                continue
+            except RuntimeError as exc:
+                _progress(f"✗ {exc}")
+                history.pop()
+                continue
             print(f"\n{branch.name}> {turn_answer}")
             history.append({"role": "assistant", "content": turn_answer})
     finally:
@@ -119,9 +134,9 @@ def _run_turn(agent: BranchAgent, manager: MCPManager, system: str, history: lis
 
 def cmd_handoff(args) -> int:
     """输出一份可直接粘给任意模型/子代理的交接包。"""
-    _, branch = _prepare(args)
+    cfg, branch = _prepare(args)
     task = _read_task(args)
-    prompt = branch.prompt(load_config(args.config).prompts_dir)
+    prompt = branch.prompt(cfg.prompts_dir)
     print(
         f"你是「{branch.name}」分支（{branch.id}）。严格按下面的分支提示词执行，"
         f"不得越权使用其他分支职责。\n"
@@ -139,7 +154,9 @@ def cmd_doctor(args) -> int:
     print(f"配置文件        : {cfg.source or '（未找到，使用内置默认值）'}")
     print(f"模型            : {cfg.provider} / {cfg.model}")
     print(f"接口地址        : {cfg.base_url}")
-    print(f"API Key         : {'已配置' if cfg.api_key else '未配置（mock 之外的服务会失败）'}")
+    keyless = cfg.provider.lower() in {"mock", "ollama", "vllm"}
+    key_state = "本地服务，无需密钥" if keyless else ("已配置" if cfg.api_key else "未配置（调用会失败）")
+    print(f"API Key         : {key_state}")
     print(f"知识库目录      : {cfg.kb_root} {'✓' if cfg.kb_root.is_dir() else '✗ 不存在'}")
     print(f"提示词目录      : {cfg.prompts_dir} {'✓' if cfg.prompts_dir.is_dir() else '✗ 不存在'}")
 
@@ -152,10 +169,24 @@ def cmd_doctor(args) -> int:
             ok = False
             print(f"  ✗ {b.id} {b.name}：{exc}")
 
-    if cfg.provider != "mock" and not cfg.api_key:
+    directory_xlsx = cfg.kb_root / "企业标准体系目录.xlsx"
+    print(f"制度目录        : {directory_xlsx} "
+          f"{'✓' if directory_xlsx.is_file() else '✗ 不存在（match_regulation 将不可用）'}")
+
+    if not keyless and not cfg.api_key:
         ok = False
     if not cfg.kb_root.is_dir():
         ok = False
+
+    print("\n分支服务覆盖：")
+    unconfigured = 0
+    for b in branches.values():
+        missing = [s for s in b.servers if s not in cfg.mcp_servers]
+        if missing:
+            unconfigured += 1
+            print(f"  ! {b.id} {b.name} 需要但未配置：{', '.join(missing)}")
+    if not unconfigured:
+        print("  ✓ 8 个分支所需服务均已配置")
 
     print("\nMCP 服务自检：")
     if not cfg.mcp_servers:
@@ -195,7 +226,7 @@ def cmd_init(args) -> int:
 
     kb = target / "kb"
     if not kb.exists() and (REPO_ROOT / "kb_template").is_dir():
-        shutil.copytree(REPO_ROOT / "kb_template", kb)
+        shutil.copytree(REPO_ROOT / "kb_template", kb, ignore=shutil.ignore_patterns(".gitkeep"))
         print(f"· 已生成知识库骨架 {kb}")
 
     env_path = target / ".env.example"

@@ -7,7 +7,7 @@
 依赖：
     pip install fastmcp curl_cffi python-docx pypdf openpyxl xlrd markdownify
 
-启动方式（stdio，供 .trae/mcp.json 里的 sak-crawler 服务器调用）：
+启动方式（stdio，供 sak.json 里的 sak-crawler 服务器调用）：
     python sak_crawler_mcp.py
 
 设计原则（对应"调用最少算力"的要求）：

@@ -77,6 +77,9 @@ pip install -e .
 
 只想要 CLI 而不装包，也可以直接 `python -m sak`。
 
+> 目前只支持**源码方式**使用（`pip install -e .`）。分支清单、提示词、知识库模板都随仓库分发，
+> 不打包进 wheel，因此不要用 `pip install safety-agents-kit` 的独立安装方式。
+
 ### 2. 初始化工作目录
 
 ```bash
@@ -104,7 +107,8 @@ export SAK_BASE_URL=http://localhost:11434/v1
 export SAK_API_KEY=ollama
 ```
 
-Claude 用 `SAK_PROVIDER=anthropic`，Gemini 用 `SAK_PROVIDER=gemini`，其余见 `sak/llm/__init__.py` 的 `PRESETS`。
+Claude 用 `SAK_PROVIDER=anthropic`，Gemini 用 `SAK_PROVIDER=gemini`。
+也可以直接写预设名（`deepseek` / `qwen` / `kimi` / `zhipu` / `ollama` / `vllm`），会自动补齐接入点，见 [sak/presets.py](sak/presets.py)。
 
 ### 4. 先不花钱，验证链路
 
@@ -174,6 +178,10 @@ pip install -e ".[crawler]"     # 标准下载
 
 `sak init` 会把它复制成 `kb/`。把标准原文放进 `02-原始资料层/`，再建一次索引即可被检索到。
 
+每层目录里的 `README.md` 写清了**哪些内容随包、哪些需要自备、缺了会怎么降级**，
+其中 [01-Wiki层](kb_template/01-Wiki层/README.md) 与 [04-脚本代码](kb_template/04-脚本代码/README.md) 的缺省项最多，
+开箱使用前建议先看一遍。
+
 ## 文档
 
 - [架构说明](docs/architecture.md) —— 分层、数据流、扩展点
@@ -185,10 +193,11 @@ pip install -e ".[crawler]"     # 标准下载
 ## 自测
 
 ```bash
-python tests/test_smoke.py
+python tests/test_smoke.py      # 分支加载、配置解析、MCP 启动与调用、编排循环
+python tests/test_llm_wire.py   # 三家模型的请求/响应报文格式（本地假 HTTP 服务）
 ```
 
-不需要任何 API Key：分支加载、配置解析、MCP 启动与调用、编排循环全覆盖。
+两个脚本都不需要任何 API Key，也不需要联网。
 
 ## 路线图
 

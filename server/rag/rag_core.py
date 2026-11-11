@@ -302,7 +302,7 @@ def _render_table_rows(data, headers, reserve=0):
             continue
         # 续行判定：首列与第二列均空，且内容都在第 3 列及以后。
         # cqs 双依据排版：|  |  |  |  |  | 《第二依据》… |（第二列空）；
-        # 巡查汇总表的空序号独立记录：|  | 十堰热电 | 2021年 | … |（第二列有值），
+        # 巡查汇总表的空序号独立记录：|  | 示例电厂G | 2021年 | … |（第二列有值），
         # 不得误并入前行
         is_cont = (not cells[0] and (len(cells) < 2 or not cells[1])
                    and all(k > 1 for k in nonempty))

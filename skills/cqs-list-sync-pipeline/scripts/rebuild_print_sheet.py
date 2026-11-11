@@ -24,7 +24,7 @@ try:
     from openpyxl import load_workbook, Workbook
     from openpyxl.utils import get_column_letter
 except ImportError:
-    sys.exit("缺少 openpyxl，请用 .trae/python-venv/Scripts/python.exe 运行")
+    sys.exit("缺少 openpyxl，请用 python 运行")
 
 COLS = 8          # A..H
 HEADER_ROWS = 3   # 1标题 2列头 3空行，数据从第4行起

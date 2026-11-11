@@ -30,7 +30,7 @@ try:
     from openpyxl import load_workbook, Workbook
     from openpyxl.styles import PatternFill
 except ImportError:
-    sys.exit("缺少 openpyxl，请用 .trae/python-venv/Scripts/python.exe 运行")
+    sys.exit("缺少 openpyxl，请用 python 运行")
 
 HEADER_ROWS = 3
 COL_PATH = 8   # H 权威路径列
