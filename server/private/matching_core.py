@@ -36,14 +36,44 @@ SYNONYM_MAP = {
 }
 
 
-def _expand_keywords(text: str) -> set:
-    """把一段文本里出现的关键词，展开成包含同义词的集合，用于双向模糊匹配。"""
-    hit = set()
+def _shared_form_len(keyword: str, question: str) -> int:
+    """返回关键词与问题在同一同义词组内共同出现的字面词的最大长度，无交集返回 0。
+
+    必须比较「字面词」而不是同义词组名：否则「绩效考核」与「考核」会被整组判为命中，
+    把只重合了两个字的匹配算成长词命中。
+    """
+    best = 0
     for standard, synonyms in SYNONYM_MAP.items():
-        all_forms = [standard] + synonyms
-        if any(form in text for form in all_forms):
-            hit.add(standard)
-    return hit
+        forms = [standard] + synonyms
+        hit_forms = [f for f in forms if f in keyword and f in question]
+        if hit_forms:
+            best = max(best, max(len(f) for f in hit_forms))
+    return best
+
+
+# 返回条数上限与弱命中阈值：目录关键词里「考核」「管理」这类两字泛词命中面很宽，
+# 全部返回会让调用方在十几条候选里自己筛。按关键词长度加权后只返回最相关的前几条。
+TOP_N = 5
+WEAK_SCORE = 1.5
+
+
+def _kw_weight(keyword: str, exact: bool) -> float:
+    """关键词打分：越长越具体，权重越高；经同义词间接命中的权重减半。"""
+    return _weight_of_len(len(keyword), exact)
+
+
+def _weight_of_len(n: int, exact: bool) -> float:
+    if n >= 5:
+        w = 3.0
+    elif n == 4:
+        w = 2.5
+    elif n == 3:
+        w = 1.6
+    elif n == 2:
+        w = 0.7
+    else:
+        w = 0.3
+    return w if exact else w * 0.5
 
 
 def _read_directory(xlsx_path: str):
@@ -97,9 +127,10 @@ def match_regulation(question: str, xlsx_path: str) -> dict:
         question: 用户原始问题（企业标准层"完全空白"场景下才调用本函数做推断）
         xlsx_path: 《示例电力企业标准体系目录.xlsx》的完整路径
 
-    返回：{"matches": [{"code", "name", "confidence", "matched_keyword"}],
+    返回：{"matches": [{"code", "name", "confidence", "matched_keyword", "score"}],
            "directory_found": bool}
-        matches 可能包含多条（并列命中时全部返回，不擅自只取第一条）
+        按关键词具体程度加权排序，最多返回 TOP_N 条；命中条数多于 TOP_N 时
+        note 会说明总命中数，不静默丢弃信息。
     """
     records = _read_directory(xlsx_path)
 
@@ -112,28 +143,50 @@ def match_regulation(question: str, xlsx_path: str) -> dict:
     if not records:
         return {"matches": [], "directory_found": True, "note": "目录文件存在但没有有效记录"}
 
-    question_expanded = _expand_keywords(question)
+    question = question or ""
 
-    confirmed = []
+    scored = []
     for rec in records:
         matched_kw = []
+        exact_score = 0.0
+        indirect_best = 0.0
         for kw in rec["keywords"]:
-            if kw and kw in question:
+            if not kw:
+                continue
+            if kw in question:
                 matched_kw.append(kw)
-            else:
-                kw_expanded = _expand_keywords(kw)
-                if kw_expanded & question_expanded:
-                    matched_kw.append(kw)
+                exact_score += _kw_weight(kw, True)
+                continue
+            shared = _shared_form_len(kw, question)
+            if shared >= 2 and shared < len(kw):
+                matched_kw.append(kw)
+                # 同义词是「旁证」：只取最强的一条计分，且按实际重合词的长度算，
+                # 避免「考核」「培训」这类两字泛词通过大量同义关键词把分数堆高。
+                indirect_best = max(indirect_best, _weight_of_len(shared, False))
+        score = exact_score + indirect_best
         if matched_kw:
-            confirmed.append({
+            weak = score < WEAK_SCORE
+            scored.append({
                 "code": rec["code"], "name": rec["name"],
-                "confidence": "已确认",
+                "confidence": "已确认（弱匹配，建议人工核实）" if weak else "已确认",
                 "matched_keyword": "、".join(matched_kw),
+                "score": round(score, 1),
             })
 
-    if confirmed:
-        confirmed.sort(key=lambda m: m["matched_keyword"].count("、"), reverse=True)
-        return {"matches": confirmed, "directory_found": True}
+    if scored:
+        scored.sort(key=lambda m: (m["score"], len(m["matched_keyword"].split("、"))), reverse=True)
+        if scored[0]["score"] < WEAK_SCORE:
+            # 全部是「考核」「管理」这类泛词命中：只给 3 条并明说不可靠，避免凑数
+            return {
+                "matches": scored[:3],
+                "directory_found": True,
+                "note": "仅关键词弱命中，不足以确认归属，建议结合制度目录人工核实",
+            }
+        result = {"matches": scored[:TOP_N], "directory_found": True}
+        if len(scored) > TOP_N:
+            result["total_hits"] = len(scored)
+            result["note"] = f"共 {len(scored)} 条制度命中关键词，已按相关度返回前 {TOP_N} 条"
+        return result
 
     inferred = []
     for rec in records:

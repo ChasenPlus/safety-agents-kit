@@ -121,6 +121,34 @@ def test_shell(root: str) -> None:
         client.close()
 
 
+def test_matching() -> None:
+    """制度归属匹配：能命中正确制度、命中过多时按相关度截断、泛词命中标弱匹配。"""
+    print("[制度归属匹配]")
+    sys.path.insert(0, str(REPO / "server" / "private"))
+    from matching_core import match_regulation  # noqa: PLC0415
+
+    xlsx = str(REPO / "kb_template" / "企业标准体系目录.xlsx")
+
+    r = match_regulation("有限空间作业审批要求是什么", xlsx)
+    check("单一关键词命中正确制度", bool(r["matches"]) and r["matches"][0]["code"] == "2143",
+          json.dumps(r["matches"][:1], ensure_ascii=False))
+
+    r = match_regulation("承包商安全文化培训考核频次要求", xlsx)
+    codes = [m["code"] for m in r["matches"]]
+    check("复合关键词命中相关制度", "2150" in codes[:3], json.dumps(codes))
+    check("命中过多时截断为 TOP_N", len(r["matches"]) <= 5, str(len(r["matches"])))
+    check("截断时说明总命中数", r.get("total_hits", 0) > 5 and "共" in r.get("note", ""))
+
+    r = match_regulation("考核怎么落地", xlsx)
+    check("泛词命中标注弱匹配", all("弱匹配" in m["confidence"] for m in r["matches"]),
+          json.dumps(r["matches"][:1], ensure_ascii=False))
+    check("泛词命中只给少量候选", len(r["matches"]) <= 3 and "弱命中" in r.get("note", ""),
+          r.get("note", ""))
+
+    r = match_regulation("随便问一句", xlsx)
+    check("无命中时不硬凑结果", r["matches"] == [] or all("推断" in m["confidence"] for m in r["matches"]))
+
+
 def test_report() -> None:
     print("[整改通知单]")
     client = boot("sak-report", "server/report/server.py")
@@ -140,6 +168,7 @@ def main() -> int:
     test_fs_roundtrip(root)
     test_excel_roundtrip(root)
     test_shell(root)
+    test_matching()
     test_report()
     print(f"\n结果：PASS {ok} / FAIL {fail}")
     return 1 if fail else 0

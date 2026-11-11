@@ -33,7 +33,7 @@ python server/<服务名>/server.py
 | 工具 | 用途 |
 |:---|:---|
 | `check_coverage(question, candidate_clause)` | R11 覆盖充分性核验：指标 / 频次 / 责任主体 / 适用范围 / 操作细节 五个维度 |
-| `match_regulation(question)` | 判断问题属于哪份制度（返回候选与置信度） |
+| `match_regulation(question)` | 判断问题属于哪份制度（按关键词具体程度加权排序，返回前 5 条候选与置信度；命中更多时提示总数） |
 
 设 `ANTHROPIC_API_KEY` 时可对启发式判断做 LLM 二次精化（可选，不设也能跑）。
 

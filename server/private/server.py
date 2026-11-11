@@ -60,9 +60,9 @@ def match_regulation(question: str) -> dict:
     参数：
         question: 用户原始问题
 
-    返回：{"matches": [{"code","name","confidence","matched_keyword"}], "directory_found": bool}
-    - matches可能包含多条（并列命中时全部返回，不擅自只取第一条，交由调用方判断）
-    - confidence为"已确认"或"推断，建议人工核实所属制度编号"
+    返回：{"matches": [{"code","name","confidence","matched_keyword","score"}], "directory_found": bool}
+    - 按关键词具体程度加权排序，最多返回前 5 条；命中更多时 note 说明总命中数
+    - confidence为"已确认"、"已确认（弱匹配，建议人工核实）"或"推断，建议人工核实所属制度编号"
     - directory_found=false时，note字段会提示目录文件缺失
     """
     return mc.match_regulation(question, DEFAULT_XLSX)
