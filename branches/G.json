@@ -1,0 +1,13 @@
+{
+  "id": "G",
+  "name": "写材料发文",
+  "summary": "安全周报/月报/季度报、安委会汇报材料",
+  "prompt": "G_documents.md",
+  "servers": [
+    "sak-fs",
+    "sak-report"
+  ],
+  "handoff_to": [
+    "B"
+  ]
+}

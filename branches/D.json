@@ -1,0 +1,11 @@
+{
+  "id": "D",
+  "name": "标准库管理",
+  "summary": "标准检索、下载、转换 MD、归位与入 RAG 索引",
+  "prompt": "D_standard_library.md",
+  "servers": [
+    "sak-rag",
+    "sak-crawler"
+  ],
+  "handoff_to": []
+}

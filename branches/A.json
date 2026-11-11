@@ -1,0 +1,14 @@
+{
+  "id": "A",
+  "name": "条款检索与判定",
+  "summary": "标准条款检索/R11 覆盖核验/R06 制度缺口判定",
+  "prompt": "A_clause_retrieval.md",
+  "servers": [
+    "sak-rag",
+    "sak-private",
+    "sak-fs"
+  ],
+  "handoff_to": [
+    "D"
+  ]
+}

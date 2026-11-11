@@ -1,0 +1,15 @@
+{
+  "id": "H",
+  "name": "定责考核与台账",
+  "summary": "制度缺口台账 R06a/R06b、修订门禁 R12、追责考核、Wiki 写回",
+  "prompt": "H_accountability_ledger.md",
+  "servers": [
+    "sak-fs",
+    "sak-rag",
+    "sak-excel",
+    "sak-private"
+  ],
+  "handoff_to": [
+    "A"
+  ]
+}

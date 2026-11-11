@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safety-agents-kit"
+version = "0.1.0"
+description = "用任意大模型驱动八分支安全合规智能体（提示词 + MCP 工具，不绑定任何 IDE）"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Safety Agents Kit contributors" }]
+keywords = ["safety", "compliance", "mcp", "llm", "agent", "power-industry"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# MCP 服务端按需安装（客户端本身零依赖）
+rag = ["numpy>=1.24", "onnxruntime>=1.16", "tokenizers>=0.15", "openpyxl>=3.1"]
+servers = [
+  "fastmcp>=1.0,<2",
+  "openpyxl>=3.1",
+  "python-docx>=1.1",
+  "Pillow>=10",
+  "numpy>=1.24",
+  "onnxruntime>=1.16",
+  "tokenizers>=0.15",
+]
+crawler = ["scrapling[fetchers]>=0.2", "pymupdf>=1.24"]
+
+[project.scripts]
+sak = "sak.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/your-org/safety-agents-kit"
+
+[tool.setuptools]
+packages = ["sak", "sak.llm"]
+
+[tool.setuptools.package-data]
+sak = ["*.json"]

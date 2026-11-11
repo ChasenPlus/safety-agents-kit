@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# 运行时产物
+kb/
+index/
+models/
+*.sqlite
+*.npy
+outputs/
+*.log
+
+# 配置与密钥
+sak.json
+.env
+.env.local
+
+# MCP 依赖
+node_modules/
+
+# 文档产物
+~$*.docx
+~$*.xlsx
+.DS_Store
+Thumbs.db

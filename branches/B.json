@@ -1,0 +1,16 @@
+{
+  "id": "B",
+  "name": "巡查检查报告",
+  "summary": "检查文件/现场问题、出问题清单与整改通知单",
+  "prompt": "B_inspection_report.md",
+  "servers": [
+    "sak-fs",
+    "sak-rag",
+    "sak-private",
+    "sak-report"
+  ],
+  "handoff_to": [
+    "A",
+    "H"
+  ]
+}

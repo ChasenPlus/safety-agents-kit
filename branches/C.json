@@ -1,0 +1,12 @@
+{
+  "id": "C",
+  "name": "制度修订起草",
+  "summary": "按制度编号起草/更新修订建议书，并回写自查台账",
+  "prompt": "C_policy_revision.md",
+  "servers": [
+    "sak-fs",
+    "sak-rag",
+    "sak-excel"
+  ],
+  "handoff_to": []
+}

@@ -1,0 +1,58 @@
+---
+name: rag-chunker-tuning
+description: sak-rag 切块器（rag_core.py parse_and_chunk）迭代调优的标准流程，含真实语料全量体检、合成+真实样本单测、临时库E2E、版本门控选择性重建、Windows MCP句柄处理与生产回归。用户要求改切块逻辑、表格/标题/OCR排版切块、重建RAG索引、排查巨型chunk或检索答案块被稀释时调用。不用于普通检索查询和新增语料入库。
+---
+
+# RAG 切块器迭代调优流程
+
+主文件：`.trae/mcp-servers/sak-rag-mcp/rag_core.py`（`parse_and_chunk` 及表格 helper）。
+venv：`.trae/python-venv/Scripts/python.exe`，一律加 `-X utf8`；PowerShell 用 `;` 不用 `&&`，stderr 红字属正常。
+生产库 30+ 万 chunk，**任何切块改动都必须走完下面六步才能动生产索引**。
+
+## 1. 语料调查（先量化，别只看一个样本）
+
+- 先全库扫描统计问题模式（管道表格数、超长行数、OCR 碎行），临时脚本放模块目录、用后即删。
+- 选 1-2 个真实大文件做行级调查：看原始行、分隔行、续行、空列排版，不同文件的排版约定可能完全不同（cqs 是"首列空=双依据续行"，巡查汇总表是"序号空但第二列有公司名=独立记录"）。
+- OCR 标准件的表格可能已被拍碎成单词行、无管道结构——切块改不好它，明确排除出本轮范围。
+
+## 2. 单测：合成用例 + 真实文件片段，断言行为不抄实现
+
+临时脚本直接 import `rag_core` 调 `parse_and_chunk`，必覆盖：
+
+- 目标样本答案块：实体+答案字段在**同一块**、唯一、不混入相邻行（如"运维检查内容：绝缘手套…执行周期：1次/半年"）
+- 续行合并边界、超长行切片带"（续）"前缀、caption 不重复、表/正文硬边界无 overlap
+- 行号 1-based 且续行跨行后 end_line 正确；chunk dict 字段保持 `start_line,end_line,heading,clause,body,is_ocr`（下游元组索引依赖）
+- 无表格文档行为不回归（标题边界、50 字 overlap、clause 透传）
+- **反面回归**：真实库踩过的坑必须固化为用例——续行累积出巨型块、wikilink 内 `|`（`[[目标|显示]]`）误判表格、空序号独立记录被误合并、超长"表头"前缀顶破硬限
+
+## 3. 全量切块体检（真实语料是唯一试金石）
+
+合成用例全过后，对生产 KB 全部命中文件跑一遍 parse，统计：
+- 总块数前后差值（异常爆炸说明有 bug，本轮实测过 4.6万→16.9万的病态结果）
+- 块长分布：**表块 ≤ HARD_CHARS(450)，正文块 ≤ HARD+OVERLAP(500)**；超出的逐一定位
+- 按文件/层列 top 异常，max 块必须抽样看原文找根因（典型：append 后才判限的超调、合并后重切位置错位、OCR 垃圾表头）
+
+## 4. 临时库 E2E（不落生产）
+
+import 前设环境变量指 tempfile：`SAK_KB_ROOT` / `SAK_RAG_INDEX_DIR` / `SAK_DIRECTORY_XLSX`（指不存在文件即可）。放 1 个目标片段 + 1 个无表文档，验证：
+全量 reindex → 目标查询 top1 直达自洽答案块（看 `snippet` 字段）→ 版本门控（meta 的 `chunker_version` 改旧后增量只重建含表文件）→ 再增量全部跳过。
+
+## 5. 版本门控与生产重建
+
+- 改切块逻辑必须把 `CHUNKER_VERSION` +1；reindex 据 meta 表版本只强制重建受影响文件（流式检测函数如 `_has_pipe_table`），其余走 mtime+size 秒级预检，禁止全量重算。
+- **Windows 句柄**：重建前先查并停掉常驻 sak-rag MCP python 进程（`Get-CimInstance Win32_Process` 按命令行过滤 → `Stop-Process`），否则向量 memmap/文件锁导致写失败。
+- 后台执行 `python -X utf8 rag_core.py reindex`，观察进度中"更新"数应只覆盖目标文件类；1200+ 文件约 15-20 分钟（含重算 embedding）。
+
+## 6. 生产回归 + 收尾
+
+- 独立进程跑 2-3 个真实查询（目标用例 + 相邻业务用例），确认 top 命中且分数合理。
+- `py_compile` 终检、GetDiagnostics 无诊断、删除全部 `_tmp*.py`。
+- MCP 不热加载：完成后**提示用户重启 宿主平台**。
+
+## 关键教训（都实际发生过）
+
+- `clean_line()` 的 `|`→空格被非表格路径共用，不要改；表格路径在分类阶段绕开它。
+- 拆表格单元格必须跳过 `[[...]]` 内的 `|`，朴素 split 会炸出残括号碎片、误判行类型。
+- 合并续行后要**立即**对合并片重切；先 extend 再查尾片会让超长片沉到列表中部永不被切。
+- 任何"每块带前缀"（caption/列名行）都要给切片预留等长预算，join 空格也要计入，否则硬限形同虚设。
+- 超 80 字的异常表头（OCR 数字垃圾）不用作列名前缀。

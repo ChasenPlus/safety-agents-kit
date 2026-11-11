@@ -1,0 +1,58 @@
+{
+  "provider": "openai",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "api_key_env": "DEEPSEEK_API_KEY",
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "max_steps": 24,
+  "kb_root": "./kb",
+  "prompts_dir": "./prompts",
+  "mcp_servers": {
+    "sak-fs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "./kb"
+      ]
+    },
+    "sak-excel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@negokaz/excel-mcp-server"
+      ]
+    },
+    "sak-rag": {
+      "command": "python",
+      "args": [
+        "server/rag/server.py"
+      ],
+      "env": {
+        "SAK_DIRECTORY_XLSX": "./kb/企业标准体系目录.xlsx"
+      }
+    },
+    "sak-private": {
+      "command": "python",
+      "args": [
+        "server/private/server.py"
+      ],
+      "env": {
+        "SAK_DIRECTORY_XLSX": "./kb/企业标准体系目录.xlsx"
+      }
+    },
+    "sak-crawler": {
+      "command": "python",
+      "args": [
+        "server/crawler/server.py"
+      ]
+    },
+    "sak-report": {
+      "command": "python",
+      "args": [
+        "server/report/server.py"
+      ]
+    }
+  }
+}

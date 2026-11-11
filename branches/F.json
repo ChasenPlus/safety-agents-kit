@@ -1,0 +1,12 @@
+{
+  "id": "F",
+  "name": "专项方案编制",
+  "summary": "施工组织方案（十章）、危大工程专项施工方案（九章）",
+  "prompt": "F_special_plan.md",
+  "servers": [
+    "sak-fs",
+    "sak-rag",
+    "sak-private"
+  ],
+  "handoff_to": []
+}

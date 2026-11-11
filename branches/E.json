@@ -1,0 +1,14 @@
+{
+  "id": "E",
+  "name": "现场工作包生成",
+  "summary": "六份现场工作包（安全/技术交底、应急卡、考核标准、规范卡、培训卡）",
+  "prompt": "E_field_workpack.md",
+  "servers": [
+    "sak-fs",
+    "sak-rag",
+    "sak-private"
+  ],
+  "handoff_to": [
+    "F"
+  ]
+}
