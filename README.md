@@ -177,7 +177,7 @@ pip install -e ".[crawler]"     # 标准下载
 [tools/ccspider](tools/ccspider/) 是一个**不依赖本项目**的标准文档小工具：批量下载行业标准并转 Markdown、把本地目录的 doc/pdf/xls 转 Markdown、比对两个文件是否一致。
 
 - `ccspider.py`：源码，约 550 行，可自行改接口或加行业；
-- `ccspider.exe`：Windows 单文件（约 45 MB），双击就用、无需 Python，从 [Releases](../../releases/latest) 下载——二进制不进仓库，克隆不会被拖慢。
+- `ccspider.exe`：Windows 单文件（约 45 MB），双击就用、无需 Python，**随仓库分发**，克隆下来直接可用；也会挂到 [Releases](../../releases/latest)，不想克隆整仓的人单独下这一个文件即可。
 
 适合把下载件交给不写代码的同事，或临时换台机器救急。详见 [tools/ccspider/README.md](tools/ccspider/README.md)。
 

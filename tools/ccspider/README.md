@@ -5,13 +5,11 @@
 | 文件 | 说明 |
 |:---|:---|
 | `ccspider.py` | 源码，约 550 行，只依赖下列第三方库 |
-| `ccspider.exe` | PyInstaller 单文件打包版（Windows x64），双击即用，无需 Python。**体积约 45 MB，不随仓库分发**，到 [Releases](../../releases/latest) 下载，或按下面的命令自己打包 |
-
-> 仓库里只有源码，克隆不会带上 exe。自己打包一份即可，命令见「依赖与重新打包」。
+| `ccspider.exe` | PyInstaller 单文件打包版（Windows x64），约 45 MB，双击即用、无需 Python；**随仓库一起分发，克隆下来就能用**（GitHub Releases 里也会挂同一份，供不想克隆整仓的人直接下载） |
 
 ## 用法
 
-双击 `ccspider.exe`（从 Releases 下载），或在装了依赖的机器上 `python ccspider.py`：
+双击 `ccspider.exe`，或在装了依赖的机器上 `python ccspider.py`：
 
 ```
 ============================== 标准文档处理工具 ==============================

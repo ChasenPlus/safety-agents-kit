@@ -37,6 +37,3 @@ Thumbs.db
 tools/ccspider/DownloadMD/
 tools/ccspider/TOMD/
 *.spec
-
-# 二进制发布物走 GitHub Releases，不进仓库
-*.exe
