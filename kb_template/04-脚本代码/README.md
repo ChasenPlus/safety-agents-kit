@@ -11,6 +11,9 @@
 | `generate_work_package_docs.py` | `skills/official-document-formatting/scripts/` | 工作包六件套转正式 docx |
 | `generate_special_plan_templates.py` | `skills/official-document-formatting/scripts/` | 专项方案模板批量生成 |
 
+台账结构本身无需自备：`03-输出层/制度修订编制/示例电力制度自查台账.xlsx` 已随包提供，
+`append_ledger_entry.py` 按它的列名写入；改列名时两处要同步。
+
 ## 需要自备
 
 以下脚本被提示词引用，但内容与使用方的标准体系、报告模板、台账结构强相关，仓库不提供。
